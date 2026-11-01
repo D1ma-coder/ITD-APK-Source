@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.webp -text
+*.png -text
+*.gif -text
+*.jar -text

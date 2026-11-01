@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <color name="itd_brand">#ff2979ff</color>
+    <color name="itd_brand_ripple">#332979ff</color>
+    <color name="itd_brand_selection">#402979ff</color>
+</resources>

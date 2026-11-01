@@ -1,0 +1,3324 @@
+[
+  {
+    "name": "AccountStatusResponse",
+    "fields": [
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "id",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isDeleted",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "canRestore",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "restoreDeadline",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "com.itd.app.data.model.UserSubscription?",
+        "nullable": true,
+        "wire": "subscription",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "Announcement",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.AnnouncementImage?",
+        "nullable": true,
+        "wire": "image",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "badge",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "title",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "description",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "additional_text",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "buttons",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "AnnouncementAction",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "type",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "url",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "AnnouncementButton",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "title",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "style",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "com.itd.app.data.model.AnnouncementAction?",
+        "nullable": true,
+        "wire": "action",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "AnnouncementImage",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "url",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "width",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "height",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "AnnouncementsResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "announcements",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "ApiErrorDetail",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "code",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "retryAfter",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "attemptsLeft",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "ApiErrorResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.ApiErrorDetail",
+        "nullable": false,
+        "wire": "error",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Attachment",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "type",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "url",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "thumbnailUrl",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "filename",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "mimeType",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Long?",
+        "nullable": true,
+        "wire": "size",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "width",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "height",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "duration",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "order",
+        "optional": true,
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "AuthState",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "authenticated",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.User?",
+        "nullable": true,
+        "wire": "user",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "banned",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "profileRequired",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "userId",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.collections.ArrayList?",
+        "nullable": true,
+        "wire": "roles",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "deleted",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "canRestore",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "restoreDeadline",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "AutoRenewalRequest",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "enabled",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "AutoRenewalResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "success",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "expiresAt",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "autoRenewal",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "renewed",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "error",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "BindCardResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "success",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "confirmationUrl",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "error",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "BlockedUser",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "username",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "verified",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "blockedAt",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasNuksta",
+        "optional": true,
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "BlockedUsersData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "users",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.BlockedUsersPagination",
+        "nullable": false,
+        "wire": "pagination",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "BlockedUsersPagination",
+    "fields": [
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "page",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "limit",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "total",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasMore",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "BlockedUsersResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.BlockedUsersData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "CaptchaPage",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "provider",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "field",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "url",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ChangePasswordRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "oldPassword",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "newPassword",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ChangePasswordResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Comment",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "content",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.User",
+        "nullable": false,
+        "wire": "author",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "likesCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "repliesCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isLiked",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "createdAt",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "attachments",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "com.itd.app.data.model.ReplyTo?",
+        "nullable": true,
+        "wire": "replyTo",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "replies",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "CommentsData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "comments",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "total",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasMore",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "nextCursor",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "CommentsResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.CommentsData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "CreateCommentRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "content",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "attachmentIds",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "CreateCommentResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.Comment",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "CreatePostRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "content",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "attachmentIds",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "spans",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "com.itd.app.data.model.PostPollRequest?",
+        "nullable": true,
+        "wire": "poll",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "wallRecipientId",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "CreateProfileRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "avatar",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "username",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "CreateProfileResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "username",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "avatar",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "createdAt",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "CreateReplyRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "content",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "replyToUserId",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "attachmentIds",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "DeleteAccountResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "deleted",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "restoreDeadline",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "DeleteMethodResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "success",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "autoRenewalDisabled",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "error",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "EditPostRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "content",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "spans",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "FeedData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "posts",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.FeedPagination",
+        "nullable": false,
+        "wire": "pagination",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "FeedPagination",
+    "fields": [
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "limit",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "nextCursor",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasMore",
+        "optional": true,
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "FeedResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.FeedData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "FileUploadResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "url",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "filename",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "mimeType",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Long",
+        "nullable": false,
+        "wire": "size",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "FollowListData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "users",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.FollowListPagination",
+        "nullable": false,
+        "wire": "pagination",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "FollowListPagination",
+    "fields": [
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "page",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "limit",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "total",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasMore",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "FollowListResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.FollowListData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "FollowListUser",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "verified",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isFollowing",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasNuksta",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlinx.serialization.json.JsonElement?",
+        "nullable": true,
+        "wire": "halloween",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "ForgotPasswordRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "token",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "turnstileToken",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "ForgotPasswordResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "flowToken",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "HashtagPostsData",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.TrendingHashtag",
+        "nullable": false,
+        "wire": "hashtag",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "posts",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "com.itd.app.data.model.FeedPagination",
+        "nullable": false,
+        "wire": "pagination",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "HashtagPostsResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.HashtagPostsData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "LastSeen",
+    "fields": [
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "unit",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int?",
+        "nullable": true,
+        "wire": "value",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "LikeResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "liked",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "likesCount",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "LoginRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "password",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "token",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "turnstileToken",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "LoginResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "accessToken",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "NotificationActor",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasNuksta",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "isFollowing",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "isFollowedBy",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlinx.serialization.json.JsonElement?",
+        "nullable": true,
+        "wire": "halloween",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "NotificationCount",
+    "fields": [
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "count",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "NotificationItem",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "type",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "targetType",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "targetId",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "subjectType",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "subjectId",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "preview",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "readAt",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "createdAt",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.NotificationActor",
+        "nullable": false,
+        "wire": "actor",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "read",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "sound",
+        "optional": true,
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "NotificationSettings",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "enabled",
+        "optional": true,
+        "default": true
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "sound",
+        "optional": true,
+        "default": true
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "follows",
+        "optional": true,
+        "default": true
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "wallPosts",
+        "optional": true,
+        "default": true
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "likes",
+        "optional": true,
+        "default": true
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "comments",
+        "optional": true,
+        "default": true
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "mentions",
+        "optional": true,
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "NotificationsResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "notifications",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasMore",
+        "optional": true,
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "PaymentMethod",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "type",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "cardLast4",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "cardBrand",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isDefault",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "createdAt",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "PaymentMethodsResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "PinResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "success",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "pinnedPostId",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "PlatformVersion",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "minVersion",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "latestVersion",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "updateUrl",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "PollOption",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "text",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "position",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "votesCount",
+        "optional": true,
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "PollVoteRequest",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "optionIds",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "PollVoteResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.PostPoll",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "PortalInfo",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "active",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "url",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "title",
+        "optional": true,
+        "default": "Портал"
+      }
+    ]
+  },
+  {
+    "name": "Post",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "content",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "com.itd.app.data.model.User",
+        "nullable": false,
+        "wire": "author",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "attachments",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "createdAt",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "likesCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "commentsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "repostsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "viewsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isLiked",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isReposted",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isOwner",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isViewed",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "authorId",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "wallRecipientId",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "com.itd.app.data.model.Post?",
+        "nullable": true,
+        "wire": "originalPost",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isDeleted",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isPinned",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "editedAt",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "spans",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "com.itd.app.data.model.PostPoll?",
+        "nullable": true,
+        "wire": "poll",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "vs",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "dominantEmoji",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "PostPoll",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "postId",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "question",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "multipleChoice",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "options",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "totalVotes",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasVoted",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "votedOptionIds",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "createdAt",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "PostPollOptionRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "text",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "PostPollRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "question",
+        "optional": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "options",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "multipleChoice",
+        "optional": true,
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "PostSpan",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "type",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "length",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "offset",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "url",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "tag",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "PostStats",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "likesCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "commentsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "repostsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "viewsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "dominantEmoji",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "PostStatsRequest",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "ids",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "PostStatsResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "posts",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "PrivacySettings",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isPrivate",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "wallAccess",
+        "optional": true,
+        "default": "everyone"
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "likesVisibility",
+        "optional": true,
+        "default": "everyone"
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "messageAccess",
+        "optional": true,
+        "default": "everyone"
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "showLastSeen",
+        "optional": true,
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "QrCodeRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "qrId",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "secret",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "QrLoginTarget",
+    "fields": [
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "client",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "clientVersion",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "os",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "osVersion",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "deviceType",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "ipAddress",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "ipCountry",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "ipCity",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "requestedAt",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Double?",
+        "nullable": true,
+        "wire": "latitude",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Double?",
+        "nullable": true,
+        "wire": "longitude",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Double?",
+        "nullable": true,
+        "wire": "accuracyKm",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "precision",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "RepliesData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "replies",
+        "optional": false
+      },
+      {
+        "name": "com.itd.app.data.model.RepliesPagination",
+        "nullable": false,
+        "wire": "pagination",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "RepliesPagination",
+    "fields": [
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "page",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "limit",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "total",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasMore",
+        "optional": true,
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "RepliesResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.RepliesData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ReplyTo",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ReportRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "targetType",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "targetId",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "reason",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "description",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "RepostRequest",
+    "fields": [
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "content",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "ResendOtpRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "flowToken",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ResendOtpResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ResetPasswordRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "flowToken",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "otp",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "newPassword",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "ResetPasswordResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "RestoreAccountResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "restored",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "RevokeAllSessionsResponse",
+    "fields": [
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "revokedCount",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "SearchData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "users",
+        "optional": true,
+        "default": []
+      },
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "hashtags",
+        "optional": true,
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "SearchResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.SearchData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "Session",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isCurrent",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "createdAt",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "lastUsedAt",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "expiresAt",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "ipAddress",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "ipCountry",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "ipCity",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "deviceType",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "osName",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "osVersion",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "clientName",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "clientVersion",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "deviceModel",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "SessionsResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "sessions",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "SetDefaultResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "success",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "error",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "SetPinRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "slug",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "SignUpRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "password",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "token",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "turnstileToken",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "SignUpResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "message",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "flowToken",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "SinglePostResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.Post",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "SuggestedUser",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "verified",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "followersCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasNuksta",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlinx.serialization.json.JsonElement?",
+        "nullable": true,
+        "wire": "halloween",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "TopClan",
+    "fields": [
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "memberCount",
+        "optional": true,
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "TopClansResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "clans",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "TrendingHashtag",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "name",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "postsCount",
+        "optional": true,
+        "default": 0
+      }
+    ]
+  },
+  {
+    "name": "TrendingHashtagsData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "hashtags",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "TrendingHashtagsResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.TrendingHashtagsData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "UpdatePrivacyRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "wallAccess",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "likesVisibility",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "messageAccess",
+        "optional": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "showLastSeen",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "UpdateProfileRequest",
+    "fields": [
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "displayName",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "bio",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "bannerId",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "UpdateProfileResponse",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "username",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "bio",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "updatedAt",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "User",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": true,
+        "default": ""
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "bio",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "verified",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.collections.ArrayList?",
+        "nullable": true,
+        "wire": "roles",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "com.itd.app.data.model.UserPin?",
+        "nullable": true,
+        "wire": "pin",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "online",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasNuksta",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "com.itd.app.data.model.UserSubscription?",
+        "nullable": true,
+        "wire": "subscription",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlinx.serialization.json.JsonElement?",
+        "nullable": true,
+        "wire": "halloween",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "UserPin",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "slug",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "name",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "description",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "url",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "grantedAt",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "UserPinsData",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "pins",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "activePin",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "UserPinsResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.UserPinsData",
+        "nullable": false,
+        "wire": "data",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "UserProfile",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "id",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "username",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "displayName",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "avatar",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "banner",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "bio",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "verified",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "com.itd.app.data.model.UserPin?",
+        "nullable": true,
+        "wire": "pin",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "pinnedPostId",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "wallAccess",
+        "optional": true,
+        "default": "nobody"
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "likesVisibility",
+        "optional": true,
+        "default": "everyone"
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "followersCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "followingCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Int",
+        "nullable": false,
+        "wire": "postsCount",
+        "optional": true,
+        "default": 0
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isFollowing",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isFollowedBy",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "createdAt",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "online",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "com.itd.app.data.model.LastSeen?",
+        "nullable": true,
+        "wire": "lastSeen",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "isBlockedByMe",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "hasNuksta",
+        "optional": true,
+        "default": false
+      },
+      {
+        "name": "com.itd.app.data.model.UserSubscription?",
+        "nullable": true,
+        "wire": "subscription",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlinx.serialization.json.JsonElement?",
+        "nullable": true,
+        "wire": "halloween",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "UserSubscription",
+    "fields": [
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "isActive",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.String?",
+        "nullable": true,
+        "wire": "expiresAt",
+        "optional": true,
+        "default": null
+      },
+      {
+        "name": "kotlin.Boolean?",
+        "nullable": true,
+        "wire": "autoRenewal",
+        "optional": true,
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "UsernameCheckResponse",
+    "fields": [
+      {
+        "name": "kotlin.Boolean",
+        "nullable": false,
+        "wire": "available",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "VerifyOtpRequest",
+    "fields": [
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "email",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "password",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "otp",
+        "optional": false
+      },
+      {
+        "name": "kotlin.String",
+        "nullable": false,
+        "wire": "flowToken",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "VersionInfoResponse",
+    "fields": [
+      {
+        "name": "com.itd.app.data.model.PlatformVersion",
+        "nullable": false,
+        "wire": "android",
+        "optional": false
+      }
+    ]
+  },
+  {
+    "name": "WhoToFollowResponse",
+    "fields": [
+      {
+        "name": "kotlin.collections.ArrayList",
+        "nullable": false,
+        "wire": "users",
+        "optional": false
+      }
+    ]
+  }
+]

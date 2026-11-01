@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">342096329930</string>
+    <string name="google_api_key" translatable="false">AIzaSyC8dzpMNL5CdiH_VKuQsPiQzNfM2HMqYVo</string>
+    <string name="google_app_id" translatable="false">1:342096329930:android:7037ba0c4944d31e340833</string>
+    <string name="google_storage_bucket" translatable="false">itd-98d3e.firebasestorage.app</string>
+    <string name="project_id" translatable="false">itd-98d3e</string>
+</resources>
