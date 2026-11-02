@@ -62,6 +62,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.itd.app.R
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.scale
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.animateColorAsState
 import com.itd.app.data.model.UpdateProfileRequest
 import com.itd.app.data.remote.ApiException
 import com.itd.app.di.AppContainer
@@ -162,132 +169,192 @@ fun DrawingEditor(
 
     BackHandler(onBack = onCancel)
     Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding().navigationBarsPadding()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onCancel, enabled = !saving) { Text("Отмена") }
-            Text(title, Modifier.weight(1f), fontWeight = FontWeight.SemiBold, fontSize = 17.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-            TextButton(
-                onClick = { onDone(BannerDrawing(canvasWidth.toInt(), canvasHeight.toInt(), ArrayList(strokes))) },
-                enabled = !saving && strokes.isNotEmpty(),
-            ) { Text(if (saving) "Сохранение..." else "Готово", fontWeight = FontWeight.SemiBold) }
+        Box(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp)) {
+            Text(
+                "Отмена",
+                Modifier.align(Alignment.CenterStart).clickable(enabled = !saving, onClick = onCancel),
+                color = colors.primary,
+                fontSize = 17.sp,
+            )
+            Text(title, Modifier.align(Alignment.Center), colors.onSurface, 17.sp, fontWeight = FontWeight.SemiBold)
+            val canSave = !saving && strokes.isNotEmpty()
+            Text(
+                if (saving) "Сохранение..." else "Готово",
+                Modifier.align(Alignment.CenterEnd).clickable(enabled = canSave) {
+                    onDone(BannerDrawing(canvasWidth.toInt(), canvasHeight.toInt(), ArrayList(strokes)))
+                },
+                color = if (canSave) colors.primary else colors.onSurfaceVariant.copy(alpha = 0.4f),
+                fontSize = 17.sp,
+                fontWeight = FontWeight.SemiBold,
+            )
         }
-        Box(
-            Modifier.fillMaxWidth().padding(12.dp).aspectRatio(canvasWidth / canvasHeight)
-                .clip(RoundedCornerShape(12.dp)).background(Color.White).border(1.dp, colors.outline, RoundedCornerShape(12.dp)),
-        ) {
-            Canvas(
-                Modifier.fillMaxSize()
-                    .pointerInput(tool, color, width) {
-                        val scale = canvasWidth / size.width
-                        fun point(offset: Offset) = floatArrayOf(offset.x * scale, offset.y * scale)
-                        detectTapGestures { offset ->
-                            if (tool.freehand) {
-                                strokes.add(BannerStroke(tool, color.toArgb(), width, point(offset)))
-                                redo.clear()
-                            }
-                        }
-                    }
-                    .pointerInput(tool, color, width) {
-                        val scale = canvasWidth / size.width
-                        detectDragGestures(
-                            onDragStart = { offset -> current = floatArrayOf(offset.x * scale, offset.y * scale) },
-                            onDrag = { change, _ ->
-                                val points = current ?: return@detectDragGestures
-                                val x = change.position.x * scale
-                                val y = change.position.y * scale
-                                current = if (tool.freehand) {
-                                    val lastX = points[points.size - 2]
-                                    val lastY = points[points.size - 1]
-                                    if (hypot(x - lastX, y - lastY) < 1.5f) points else points + floatArrayOf(x, y)
-                                } else {
-                                    floatArrayOf(points[0], points[1], x, y)
-                                }
-                            },
-                            onDragEnd = {
-                                current?.let { points ->
-                                    val finalPoints = if (!tool.freehand && points.size == 2) points + points else points
-                                    strokes.add(BannerStroke(tool, color.toArgb(), width, finalPoints))
-                                    redo.clear()
-                                }
-                                current = null
-                            },
-                            onDragCancel = { current = null },
-                        )
-                    },
+        HorizontalDivider(thickness = 1.dp, color = colors.outlineVariant)
+        Box(Modifier.fillMaxWidth().weight(1f)) {
+            Box(
+                Modifier.align(Alignment.Center).fillMaxWidth().padding(horizontal = 16.dp).aspectRatio(canvasWidth / canvasHeight)
+                    .clip(RoundedCornerShape(12.dp)).background(Color.White).border(1.dp, colors.outlineVariant, RoundedCornerShape(12.dp)),
             ) {
-                val scale = size.width / canvasWidth
-                strokes.forEach { drawStroke(it.tool, Color(it.color), it.width, it.points, scale) }
-                current?.let { points ->
-                    if (tool.freehand || points.size == 4) drawStroke(tool, color, width, points, scale)
-                }
+                PainterCanvas(strokes, redo, tool, color, width, current, { current = it }, canvasWidth, canvasHeight)
             }
-        }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-            ToolButton(R.drawable.ic_undo, "Undo", strokes.isNotEmpty()) { redo.add(strokes.removeAt(strokes.lastIndex)) }
-            ToolButton(R.drawable.ic_redo, "Redo", redo.isNotEmpty()) { strokes.add(redo.removeAt(redo.lastIndex)) }
-            ToolButton(R.drawable.ic_download, "Скачать", strokes.isNotEmpty()) {
-                saveToGallery(context, strokes, canvasWidth, canvasHeight)
-            }
-            Spacer(Modifier.weight(1f))
-            TextButton(onClick = {
-                redo.clear()
-                redo.addAll(strokes.reversed())
-                strokes.clear()
-            }, enabled = strokes.isNotEmpty()) { Text("Очистить") }
-        }
-        Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            BannerTool.entries.forEach { entry ->
-                val selected = entry == tool
-                Column(
-                    Modifier.clip(RoundedCornerShape(12.dp))
-                        .background(if (selected) colors.primary else Color.Transparent)
-                        .clickable { tool = entry }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Icon(painterResource(toolIcons.getValue(entry)), null, Modifier.size(20.dp), tint = if (selected) colors.onPrimary else colors.onSurfaceVariant)
-                    Text(toolLabels.getValue(entry), fontSize = 11.sp, color = if (selected) colors.onPrimary else colors.onSurfaceVariant)
-                }
-            }
-        }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(32.dp), contentAlignment = Alignment.Center) {
-                Box(Modifier.size((width / 30f * 24f).coerceAtLeast(4f).dp).clip(CircleShape).background(if (tool == BannerTool.ERASER) colors.outline else color))
-            }
-            Slider(value = width, onValueChange = { width = it }, valueRange = 0.25f..30f, modifier = Modifier.weight(1f))
-            Text(String.format("%.1f", width), fontSize = 13.sp, color = colors.onSurfaceVariant)
-        }
-        Row(
-            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            PainterPalette.forEach { swatch ->
-                Box(
-                    Modifier.size(30.dp).clip(CircleShape).background(swatch)
-                        .border(if (swatch == color) 3.dp else 1.dp, if (swatch == color) colors.primary else colors.outline, CircleShape)
-                        .clickable { color = swatch },
-                )
+            Row(
+                Modifier.align(Alignment.TopStart).padding(start = 12.dp, top = 12.dp).clip(RoundedCornerShape(20.dp))
+                    .background(colors.surfaceVariant.copy(alpha = 0.85f)).padding(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                HistoryButton(R.drawable.ic_undo, "Undo", strokes.isNotEmpty()) { redo.add(strokes.removeAt(strokes.lastIndex)) }
+                Box(Modifier.size(width = 1.dp, height = 18.dp).background(colors.outlineVariant))
+                HistoryButton(R.drawable.ic_redo, "Redo", redo.isNotEmpty()) { strokes.add(redo.removeAt(redo.lastIndex)) }
             }
             Box(
-                Modifier.size(30.dp).clip(CircleShape).background(colors.surfaceVariant).clickable { showHsv = !showHsv },
+                Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 12.dp).size(44.dp).clip(CircleShape)
+                    .background(colors.surfaceVariant.copy(alpha = 0.85f))
+                    .clickable(enabled = strokes.isNotEmpty()) { saveToGallery(context, strokes, canvasWidth, canvasHeight) },
                 contentAlignment = Alignment.Center,
-            ) { Icon(painterResource(R.drawable.ic_palette), null, Modifier.size(18.dp)) }
+            ) {
+                Icon(painterResource(R.drawable.ic_download), "Скачать", Modifier.size(22.dp), tint = colors.onSurface)
+            }
+        }
+        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(toolLabels.getValue(tool), color = colors.onSurfaceVariant, fontSize = 14.sp)
+            Spacer(Modifier.width(12.dp))
+            Slider(value = width, onValueChange = { width = it }, valueRange = 0.25f..30f, modifier = Modifier.weight(1f))
+            Spacer(Modifier.width(12.dp))
+            Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.size((width / 30f * 24f).coerceAtLeast(4f).dp).clip(CircleShape).background(if (tool == BannerTool.ERASER) colors.outline else color))
+            }
+        }
+        Row(
+            Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val custom = color !in PainterPalette
+            Box(
+                Modifier.size(36.dp).border(3.dp, Brush.sweepGradient(RainbowRing), CircleShape).padding(5.dp).clip(CircleShape)
+                    .background(if (custom) color else Color.Red).clickable { showHsv = !showHsv },
+            )
+            PainterPalette.forEach { swatch ->
+                val selected = swatch == color
+                Box(
+                    Modifier.size(36.dp).let { if (selected) it.border(3.dp, colors.primary, CircleShape).padding(5.dp) else it.padding(1.dp) }
+                        .clip(CircleShape).background(swatch).border(1.dp, colors.outlineVariant, CircleShape).clickable { color = swatch },
+                )
+            }
         }
         if (showHsv) HsvPicker(color) { color = it }
+        Spacer(Modifier.height(16.dp))
+        Box(Modifier.fillMaxWidth().padding(horizontal = 20.dp), contentAlignment = Alignment.Center) {
+            Row(
+                Modifier.clip(RoundedCornerShape(24.dp)).background(colors.surfaceVariant).padding(4.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                BannerTool.entries.forEach { entry ->
+                    PainterToolButton(toolIcons.getValue(entry), toolLabels.getValue(entry), entry == tool, colors.primary.copy(alpha = 0.2f), colors.primary) { tool = entry }
+                }
+                Box(Modifier.size(width = 1.dp, height = 24.dp).background(colors.outlineVariant))
+                PainterToolButton(R.drawable.ic_trash, "Очистить", false, colors.error.copy(alpha = 0.15f), colors.error) {
+                    if (strokes.isNotEmpty()) {
+                        redo.clear()
+                        redo.addAll(strokes.reversed())
+                        strokes.clear()
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+    }
+}
+
+private val RainbowRing = listOf(Color.Red, Color.Yellow, Color.Green, Color.Cyan, Color.Blue, Color.Magenta, Color.Red)
+
+@Composable
+private fun HistoryButton(icon: Int, description: String, enabled: Boolean, onClick: () -> Unit) {
+    Icon(
+        painterResource(icon),
+        description,
+        Modifier.size(32.dp).clip(CircleShape).clickable(enabled = enabled, onClick = onClick).padding(5.dp),
+        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.35f),
+    )
+}
+
+@Composable
+private fun PainterToolButton(icon: Int, description: String, selected: Boolean, selectedBackground: Color, selectedTint: Color, onClick: () -> Unit) {
+    val background by animateColorAsState(if (selected) selectedBackground else Color.Transparent, spring(stiffness = 400f), label = "toolBg")
+    val tint by animateColorAsState(if (selected) selectedTint else MaterialTheme.colorScheme.onSurface, spring(stiffness = 400f), label = "toolTint")
+    val scale by animateFloatAsState(if (selected) 1.15f else 1f, spring(dampingRatio = 0.45f, stiffness = 1500f), label = "toolIconScale")
+    Box(Modifier.size(44.dp).clip(CircleShape).background(background).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
+        Icon(painterResource(icon), description, Modifier.size(20.dp).scale(scale), tint = tint)
     }
 }
 
 @Composable
-private fun ToolButton(icon: Int, description: String, enabled: Boolean, onClick: () -> Unit) {
-    val colors = MaterialTheme.colorScheme
-    Box(
-        Modifier.size(40.dp).clip(CircleShape).background(colors.surfaceVariant).clickable(enabled = enabled, onClick = onClick),
-        contentAlignment = Alignment.Center,
+private fun PainterCanvas(
+    strokes: MutableList<BannerStroke>,
+    redo: MutableList<BannerStroke>,
+    tool: BannerTool,
+    color: Color,
+    width: Float,
+    current: FloatArray?,
+    onCurrent: (FloatArray?) -> Unit,
+    canvasWidth: Float,
+    canvasHeight: Float,
+) {
+    Canvas(
+        Modifier.fillMaxSize()
+            .pointerInput(tool, color, width) {
+                val scale = canvasWidth / size.width
+                fun point(offset: Offset) = floatArrayOf(offset.x * scale, offset.y * scale)
+                detectTapGestures { offset ->
+                    if (tool.freehand) {
+                        strokes.add(BannerStroke(tool, color.toArgb(), width, point(offset)))
+                        redo.clear()
+                    }
+                }
+            }
+            .pointerInput(tool, color, width) {
+                val scale = canvasWidth / size.width
+                var points: FloatArray? = null
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        points = floatArrayOf(offset.x * scale, offset.y * scale)
+                        onCurrent(points)
+                    },
+                    onDrag = { change, _ ->
+                        val existing = points ?: return@detectDragGestures
+                        val x = change.position.x * scale
+                        val y = change.position.y * scale
+                        points = if (tool.freehand) {
+                            val lastX = existing[existing.size - 2]
+                            val lastY = existing[existing.size - 1]
+                            if (hypot(x - lastX, y - lastY) < 1.5f) existing else existing + floatArrayOf(x, y)
+                        } else {
+                            floatArrayOf(existing[0], existing[1], x, y)
+                        }
+                        onCurrent(points)
+                    },
+                    onDragEnd = {
+                        points?.let { finished ->
+                            val finalPoints = if (!tool.freehand && finished.size == 2) finished + finished else finished
+                            strokes.add(BannerStroke(tool, color.toArgb(), width, finalPoints))
+                            redo.clear()
+                        }
+                        points = null
+                        onCurrent(null)
+                    },
+                    onDragCancel = {
+                        points = null
+                        onCurrent(null)
+                    },
+                )
+            },
     ) {
-        Icon(painterResource(icon), description, Modifier.size(20.dp), tint = if (enabled) colors.onSurface else colors.onSurfaceVariant.copy(alpha = 0.4f))
+        val scale = size.width / canvasWidth
+        strokes.forEach { drawStroke(it.tool, Color(it.color), it.width, it.points, scale) }
+        current?.let { points ->
+            if (tool.freehand || points.size == 4) drawStroke(tool, color, width, points, scale)
+        }
     }
 }
 

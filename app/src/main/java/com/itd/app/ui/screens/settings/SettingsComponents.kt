@@ -36,8 +36,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.itd.app.R
+import androidx.compose.foundation.layout.height
+import com.itd.app.ui.theme.ItdBlue
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.getValue
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateColorAsState
 
-/** Settings page scaffold: header with back button, optional action and scrollable content. */
+/** Settings page scaffold: round back button, centred title, optional pill action and scrollable content. */
 @Composable
 fun SettingsPage(
     title: String,
@@ -46,25 +55,53 @@ fun SettingsPage(
     actionEnabled: Boolean = true,
     onAction: () -> Unit = {},
     scrollable: Boolean = true,
+    close: Boolean = false,
+    actionBusy: Boolean = false,
+    contentPadding: Dp = 16.dp,
+    spacing: Dp = 16.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).statusBarsPadding()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).clip(RoundedCornerShape(50)).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_chevron_back), "Назад", Modifier.size(22.dp))
-            }
-            Text(title, Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
-            if (action != null) {
-                TextButton(onClick = onAction, enabled = actionEnabled) { Text(action, fontWeight = FontWeight.SemiBold) }
-            } else {
-                Spacer(Modifier.width(44.dp))
-            }
-        }
+    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        SettingsHeader(title, onBack, action, actionEnabled, onAction, close, actionBusy)
         val body = Modifier.fillMaxWidth().weight(1f).let { if (scrollable) it.verticalScroll(rememberScrollState()) else it }
-        Column(body.padding(horizontal = 16.dp).navigationBarsPadding(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Spacer(Modifier.size(4.dp))
+        Column(body.padding(horizontal = contentPadding).navigationBarsPadding(), verticalArrangement = Arrangement.spacedBy(spacing)) {
             content()
             Spacer(Modifier.size(24.dp))
+        }
+    }
+}
+
+@Composable
+fun SettingsHeader(
+    title: String,
+    onBack: () -> Unit,
+    action: String? = null,
+    actionEnabled: Boolean = true,
+    onAction: () -> Unit = {},
+    close: Boolean = false,
+    actionBusy: Boolean = false,
+) {
+    val colors = MaterialTheme.colorScheme
+    Box(Modifier.fillMaxWidth().statusBarsPadding().padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 20.dp)) {
+        Text(title, Modifier.align(Alignment.Center), colors.onSurface, 17.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+        Box(
+            Modifier.align(Alignment.CenterStart).size(44.dp).clip(CircleShape).background(colors.onSurface.copy(alpha = 0.1f)).clickable(onClick = onBack),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(painterResource(if (close) R.drawable.ic_close else R.drawable.ic_chevron_back), if (close) "Закрыть" else "Назад", Modifier.size(22.dp), tint = colors.onSurface)
+        }
+        if (action != null) {
+            val active = actionEnabled && !actionBusy
+            val background by animateColorAsState(if (active) ItdBlue else colors.onSurface.copy(alpha = 0.1f), tween(220), label = "settings-header-action-bg")
+            val foreground by animateColorAsState(if (active) Color.White else colors.onSurfaceVariant.copy(alpha = 0.4f), tween(220), label = "settings-header-action-fg")
+            Box(
+                Modifier.align(Alignment.CenterEnd).height(44.dp).clip(CircleShape).background(background)
+                    .clickable(enabled = active, onClick = onAction).padding(horizontal = 20.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (actionBusy) CircularProgressIndicator(Modifier.size(18.dp), color = foreground, strokeWidth = 2.dp)
+                else Text(action, color = foreground, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            }
         }
     }
 }

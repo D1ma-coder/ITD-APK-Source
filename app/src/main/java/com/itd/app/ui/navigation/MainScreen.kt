@@ -244,6 +244,7 @@ fun MainScreen(
                     onFollowList = { id, followers -> nav.navigate("follows/$id?followers=$followers") },
                     onCompose = { wall -> nav.navigate("create-post?wall=${wall.orEmpty()}") },
                     onSubscription = { nav.navigate("subscription") },
+                    onLogout = onLogout,
                 )
             }
             composable("follows/{id}?followers={followers}", arguments = listOf(navArgument("followers") { defaultValue = "true" })) { backStack ->
@@ -267,7 +268,7 @@ fun MainScreen(
                 val create: CreatePostViewModel = viewModel(factory = viewModelFactory {
                     CreatePostViewModel(container.postsApi, container.mediaRepository, wall, container.halloweenRepository, container.postInteractor::requirePhoneVerification)
                 })
-                CreatePostScreen(create, { nav.popBackStack() }) { id ->
+                CreatePostScreen(create, user, { nav.popBackStack() }) { id ->
                     nav.popBackStack()
                     openPostById(id, null)
                 }

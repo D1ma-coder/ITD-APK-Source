@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -69,6 +70,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.itd.app.R
+import com.itd.app.ui.components.UserName
+import com.itd.app.data.model.User
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.offset
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateFloatAsState
 import com.itd.app.data.model.PostSpan
 import com.itd.app.ui.screens.camera.CameraActivity
 
@@ -107,12 +114,14 @@ private class SpanTransformation(private val spans: List<PostSpan>, private val 
 }
 
 @Composable
-fun CreatePostScreen(viewModel: CreatePostViewModel, onBack: () -> Unit = {}, onCreated: (String) -> Unit) {
+fun CreatePostScreen(viewModel: CreatePostViewModel, user: User?, onBack: () -> Unit = {}, onCreated: (String) -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val colors = MaterialTheme.colorScheme
     var linkDialog by remember { mutableStateOf(false) }
     var nightHelp by remember { mutableStateOf(false) }
+    var attachMenu by remember { mutableStateOf(false) }
+    var formatting by remember { mutableStateOf(false) }
     val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(10)) { viewModel.attach(it) }
     val pickNight = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(4)) { viewModel.attach(it, night = true) }
     val camera = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -138,93 +147,133 @@ fun CreatePostScreen(viewModel: CreatePostViewModel, onBack: () -> Unit = {}, on
         }
     }
     BackHandler(onBack = onBack)
-    Column(Modifier.fillMaxSize().background(colors.background).statusBarsPadding().imePadding().navigationBarsPadding()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(44.dp).clip(CircleShape).clickable(onClick = onBack), contentAlignment = Alignment.Center) {
-                Icon(painterResource(R.drawable.ic_chevron_back), "Назад", Modifier.size(22.dp))
+    val sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+    Box(Modifier.fillMaxSize().background(Color.Black)) {
+        Column(
+            Modifier.fillMaxSize().statusBarsPadding().padding(top = 10.dp).clip(sheetShape).background(colors.surface)
+                .imePadding().navigationBarsPadding(),
+        ) {
+            Box(Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
+                Box(Modifier.size(width = 36.dp, height = 4.dp).clip(CircleShape).background(colors.onSurfaceVariant.copy(alpha = 0.4f)))
             }
-            Text("Новый пост", Modifier.weight(1f), fontWeight = FontWeight.SemiBold, fontSize = 17.sp)
-            Box(
-                Modifier.clip(RoundedCornerShape(50)).background(if (state.canPublish) colors.primary else colors.surfaceVariant)
-                    .clickable(enabled = state.canPublish, onClick = viewModel::submit).padding(horizontal = 16.dp, vertical = 8.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                if (state.isSending) {
-                    CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = colors.onPrimary)
-                } else {
-                    Text("Опубликовать", color = if (state.canPublish) colors.onPrimary else colors.onSurfaceVariant, fontWeight = FontWeight.SemiBold)
-                }
-            }
-        }
-        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Box {
-                if (state.content.isEmpty()) Text("О чём думаете?", color = colors.onSurfaceVariant, fontSize = 17.sp)
-                BasicTextField(
-                    state.text,
-                    viewModel::onTextChange,
-                    Modifier.fillMaxWidth().heightIn(min = 120.dp),
-                    textStyle = TextStyle(color = colors.onBackground, fontSize = 17.sp),
-                    cursorBrush = SolidColor(colors.primary),
-                    visualTransformation = SpanTransformation(state.spans, colors.primary, colors.onSurfaceVariant.copy(alpha = 0.35f)),
-                )
-            }
-            if (!state.text.selection.collapsed) {
-                Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    formats.forEach { (type, label) ->
-                        Text(
-                            label,
-                            Modifier.clip(RoundedCornerShape(50)).background(colors.surfaceVariant)
-                                .clickable { if (type == "link") linkDialog = true else viewModel.format(type) }
-                                .padding(horizontal = 12.dp, vertical = 6.dp),
-                            fontSize = 13.sp,
-                        )
-                    }
-                }
-            }
-            AttachmentStrip(state.attachments) { viewModel.removeAttachment(it) }
-            state.poll?.let { poll -> PollEditor(poll, viewModel::setPoll) }
-            if (state.nightEnabled) {
-                Column(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0xFF14142B)).padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("🌙 Ночная версия", Modifier.weight(1f), color = Color.White, fontWeight = FontWeight.SemiBold)
-                        Text("что это?", Modifier.clickable { nightHelp = true }, color = Color(0xFFB3AFFA), fontSize = 13.sp)
-                    }
-                    BasicTextField(
-                        state.nightText,
-                        viewModel::onNightTextChange,
-                        Modifier.fillMaxWidth().heightIn(min = 60.dp),
-                        textStyle = TextStyle(color = Color.White, fontSize = 15.sp),
-                        cursorBrush = SolidColor(Color.White),
-                        decorationBox = { inner ->
-                            if (state.nightText.isEmpty()) Text("Что покажется в полночь?", color = Color.White.copy(alpha = 0.5f))
-                            inner()
-                        },
-                    )
-                    AttachmentStrip(state.nightImages) { viewModel.removeAttachment(it, night = true) }
-                    Text(
-                        "Фото",
-                        Modifier.clickable { pickNight.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                        color = Color(0xFFB3AFFA),
-                    )
-                }
-            }
-            state.error?.let { Text(it, color = colors.error) }
-        }
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            ToolIcon(R.drawable.ic_gallery, "Фото") { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)) }
-            ToolIcon(R.drawable.ic_camera, "Камера") { camera.launch(Intent(context, CameraActivity::class.java)) }
-            ToolIcon(R.drawable.ic_survey, "Опрос") { viewModel.setPoll(if (state.poll == null) PollDraft() else null) }
-            ToolIcon(R.drawable.ic_link, "Ссылка") { if (!state.text.selection.collapsed) linkDialog = true }
-            if (com.itd.app.halloween.HalloweenPortalManager.actionsAvailable) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    Modifier.size(44.dp).clip(CircleShape)
-                        .background(if (state.nightEnabled) colors.primary.copy(alpha = 0.15f) else Color.Transparent)
-                        .clickable { viewModel.setNightEnabled(!state.nightEnabled) },
+                    Modifier.size(40.dp).clip(CircleShape).background(colors.onSurface.copy(alpha = 0.1f)).clickable(onClick = onBack),
                     contentAlignment = Alignment.Center,
-                ) { Text("🌙", fontSize = 20.sp) }
+                ) {
+                    Icon(painterResource(R.drawable.ic_chevron_back), "Назад", Modifier.size(21.dp).offset(x = (-1).dp), tint = colors.onSurface)
+                }
+                Text("Новый пост", Modifier.weight(1f), colors.onSurface, 16.sp, fontWeight = FontWeight.SemiBold, textAlign = TextAlign.Center)
+                Spacer(Modifier.width(40.dp))
+            }
+            Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+                Row(Modifier.fillMaxWidth().padding(start = 16.dp, top = 14.dp, end = 16.dp)) {
+                    Box(Modifier.size(40.dp).clip(CircleShape).background(colors.surfaceVariant), contentAlignment = Alignment.Center) {
+                        Text(user?.avatar ?: "?", fontSize = 20.sp)
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(0.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            UserName(user?.displayName.orEmpty(), user?.hasNuksta == true, 15.sp)
+                            if (user?.verified == true) {
+                                Spacer(Modifier.width(4.dp))
+                                Icon(painterResource(R.drawable.ic_verified), "Verified", Modifier.size(14.dp), tint = Color.Unspecified)
+                            }
+                        }
+                        Spacer(Modifier.height(12.dp))
+                        BasicTextField(
+                            state.text,
+                            viewModel::onTextChange,
+                            Modifier.fillMaxWidth(),
+                            textStyle = TextStyle(color = colors.onSurface, fontSize = 15.sp, lineHeight = 22.sp),
+                            cursorBrush = SolidColor(colors.primary),
+                            visualTransformation = SpanTransformation(state.spans, colors.primary, colors.onSurfaceVariant.copy(alpha = 0.35f)),
+                            decorationBox = { inner ->
+                                Box {
+                                    if (state.content.isEmpty()) Text("О чём думаете?", color = colors.onSurfaceVariant, fontSize = 15.sp, lineHeight = 22.sp)
+                                    inner()
+                                }
+                            },
+                        )
+                        if (formatting && !state.text.selection.collapsed) {
+                            Spacer(Modifier.height(8.dp))
+                            Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                formats.forEach { (type, label) ->
+                                    Text(
+                                        label,
+                                        Modifier.clip(RoundedCornerShape(50)).background(colors.surfaceVariant)
+                                            .clickable { if (type == "link") linkDialog = true else viewModel.format(type) }
+                                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                                        fontSize = 13.sp,
+                                    )
+                                }
+                            }
+                        }
+                        if (state.attachments.isNotEmpty()) {
+                            Spacer(Modifier.height(12.dp))
+                            AttachmentStrip(state.attachments) { viewModel.removeAttachment(it) }
+                        }
+                        state.poll?.let { poll ->
+                            Spacer(Modifier.height(12.dp))
+                            PollEditor(poll, viewModel::setPoll)
+                        }
+                        if (state.nightEnabled) {
+                            Spacer(Modifier.height(12.dp))
+                            NightEditor(state, viewModel, onHelp = { nightHelp = true }) {
+                                pickNight.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                            }
+                        }
+                        state.error?.let {
+                            Spacer(Modifier.height(8.dp))
+                            Text(it, color = colors.error, fontSize = 14.sp)
+                        }
+                        Spacer(Modifier.height(12.dp))
+                    }
+                }
+                Row(Modifier.padding(start = 58.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box {
+                        ToolIcon(R.drawable.ic_attach, "Вложение", alpha = if (state.attachments.size < 10) 0.6f else 0.2f) { attachMenu = true }
+                        com.itd.app.ui.components.ItdMenu(attachMenu, { attachMenu = false }) {
+                            com.itd.app.ui.components.ItdMenuItem("Камера", R.drawable.ic_camera) {
+                                attachMenu = false
+                                camera.launch(Intent(context, CameraActivity::class.java))
+                            }
+                            androidx.compose.material3.HorizontalDivider(color = colors.outline.copy(alpha = 0.15f))
+                            com.itd.app.ui.components.ItdMenuItem("Выбрать из галереи", R.drawable.ic_gallery) {
+                                attachMenu = false
+                                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                            }
+                        }
+                    }
+                    ToolIcon(R.drawable.ic_palette, "Форматирование", alpha = if (!state.text.selection.collapsed) 0.6f else 0.2f) {
+                        formatting = !formatting
+                    }
+                    ToolIcon(
+                        R.drawable.ic_survey,
+                        "Опрос",
+                        tint = if (state.poll != null) colors.primary else colors.onSurfaceVariant.copy(alpha = 0.6f),
+                    ) { viewModel.setPoll(if (state.poll == null) PollDraft() else null) }
+                    if (com.itd.app.halloween.HalloweenPortalManager.actionsAvailable) {
+                        Box(
+                            Modifier.size(44.dp).clip(CircleShape)
+                                .background(if (state.nightEnabled) colors.primary.copy(alpha = 0.15f) else Color.Transparent)
+                                .clickable { viewModel.setNightEnabled(!state.nightEnabled) },
+                            contentAlignment = Alignment.Center,
+                        ) { Icon(painterResource(R.drawable.ic_moon), "Ночная версия", Modifier.size(22.dp), tint = colors.onSurfaceVariant.copy(alpha = 0.6f)) }
+                    }
+                }
+                Spacer(Modifier.height(24.dp))
+            }
+            val sendAlpha by animateFloatAsState(if (state.canPublish) 1f else if (state.isSending) 0.55f else 0.4f, tween(200), label = "sendAlpha")
+            Box(Modifier.fillMaxWidth().padding(12.dp), contentAlignment = Alignment.CenterEnd) {
+                Box(
+                    Modifier.clip(RoundedCornerShape(20.dp)).background(colors.primary.copy(alpha = sendAlpha))
+                        .clickable(enabled = state.canPublish, onClick = viewModel::submit).padding(horizontal = 20.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (state.isSending) CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp, color = Color.White)
+                    else Text("Опубликовать", color = Color.White, fontSize = 14.sp)
+                }
             }
         }
     }
@@ -243,9 +292,35 @@ fun CreatePostScreen(viewModel: CreatePostViewModel, onBack: () -> Unit = {}, on
 }
 
 @Composable
-private fun ToolIcon(icon: Int, description: String, tint: Color? = null, onClick: () -> Unit) {
+private fun ToolIcon(icon: Int, description: String, tint: Color? = null, alpha: Float = 0.6f, onClick: () -> Unit) {
     Box(Modifier.size(44.dp).clip(CircleShape).clickable(onClick = onClick), contentAlignment = Alignment.Center) {
-        Icon(painterResource(icon), description, Modifier.size(22.dp), tint = tint ?: MaterialTheme.colorScheme.onSurfaceVariant)
+        Icon(painterResource(icon), description, Modifier.size(22.dp), tint = tint ?: MaterialTheme.colorScheme.onSurface.copy(alpha = alpha))
+    }
+}
+
+@Composable
+private fun NightEditor(state: CreatePostState, viewModel: CreatePostViewModel, onHelp: () -> Unit, onPickPhoto: () -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color(0xFF14142B)).padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("🌙 Ночная версия", Modifier.weight(1f), color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text("что это?", Modifier.clickable(onClick = onHelp), color = Color(0xFFB3AFFA), fontSize = 13.sp)
+        }
+        BasicTextField(
+            state.nightText,
+            viewModel::onNightTextChange,
+            Modifier.fillMaxWidth().heightIn(min = 60.dp),
+            textStyle = TextStyle(color = Color.White, fontSize = 15.sp),
+            cursorBrush = SolidColor(Color.White),
+            decorationBox = { inner ->
+                if (state.nightText.isEmpty()) Text("Что покажется в полночь?", color = Color.White.copy(alpha = 0.5f))
+                inner()
+            },
+        )
+        AttachmentStrip(state.nightImages) { viewModel.removeAttachment(it, night = true) }
+        Text("Фото", Modifier.clickable(onClick = onPickPhoto), color = Color(0xFFB3AFFA))
     }
 }
 

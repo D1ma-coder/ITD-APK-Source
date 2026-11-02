@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import com.itd.app.data.model.PostSpan
 
@@ -30,6 +31,8 @@ fun PostText(
     onHashtag: ((String) -> Unit)? = null,
     maxLines: Int = Int.MAX_VALUE,
     onOverflow: (Boolean) -> Unit = {},
+    fontSize: TextUnit = 15.sp,
+    lineHeight: TextUnit = TextUnit.Unspecified,
 ) {
     var link by remember { mutableStateOf<String?>(null) }
     link?.let { url -> LinkSheet(url) { link = null } }
@@ -66,7 +69,7 @@ fun PostText(
     ClickableText(
         text,
         modifier,
-        style = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface, fontSize = 15.sp),
+        style = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface, fontSize = fontSize, lineHeight = lineHeight),
         maxLines = maxLines,
         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
         onTextLayout = { onOverflow(it.hasVisualOverflow) },

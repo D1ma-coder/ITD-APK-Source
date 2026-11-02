@@ -120,7 +120,7 @@ fun PostDetailScreen(
             is LoadState.Ready -> {
                 val content = value.data
                 LazyColumn(Modifier.weight(1f), state = listState) {
-                    item { PostCard(content.post, {}, { onProfile(content.post.author.username ?: content.post.author.id) }, onHashtag) }
+                    item { PostCard(content.post, {}, { onProfile(content.post.author.username ?: content.post.author.id) }, onHashtag, detail = true) }
                     item { SortSelector(content.sort, viewModel::setSort) }
                     when {
                         content.commentsOffline -> item {

@@ -14,11 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +33,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.Spacer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -228,6 +235,7 @@ fun PossessionPanel(postId: String, authorUsername: String?, possession: Hallowe
 }
 
 /** First-launch announcement of the event. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HalloweenIntroDialog() {
     val userId = HalloweenNotices.userId ?: return
@@ -238,21 +246,57 @@ fun HalloweenIntroDialog() {
         HalloweenFlags.set(key)
         visible = false
     }
-    AlertDialog(
+    val colors = MaterialTheme.colorScheme
+    ModalBottomSheet(
         onDismissRequest = ::close,
-        title = { Text("ААА!! ВНИМАНИЕ!! В ИТД проникли тёмные силы!!") },
-        text = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Box(Modifier.size(96.dp), contentAlignment = Alignment.Center) { AsyncImage(HalloweenArt.url("ghost"), null, Modifier.size(96.dp)) }
-                Text("Будь аккуратен, с сегодняшней ночи в посты вселяются призраки! Ты должен дать им отпор! Лови привидений, помогай друзьям и получай за это конфеты!")
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        containerColor = colors.surface,
+        dragHandle = null,
+    ) {
+        Column(Modifier.fillMaxWidth()) {
+            Box(
+                Modifier.fillMaxWidth().aspectRatio(1.6f)
+                    .background(Brush.verticalGradient(listOf(Color(0.11f, 0.07f, 0.2f), Color(0.35f, 0.16f, 0.08f)))),
+                contentAlignment = Alignment.Center,
+            ) {
+                AsyncImage(HalloweenArt.url("ghost-orig"), null, Modifier.size(150.dp))
             }
-        },
-        confirmButton = { TextButton(onClick = ::close) { Text("Понятно") } },
-        dismissButton = {
-            TextButton(onClick = {
-                close()
-                HalloweenNavigation.openEventSection(null)
-            }) { Text("Узнать больше") }
-        },
-    )
+            Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(top = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("ААА!! ВНИМАНИЕ!! В ИТД проникли тёмные силы!!", color = colors.onSurface, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    "Будь аккуратен, с сегодняшней ночи в посты вселяются призраки! Ты должен дать им отпор! Лови привидений, помогай друзьям и получай за это конфеты!",
+                    color = colors.onSurfaceVariant,
+                    fontSize = 15.sp,
+                    lineHeight = 21.sp,
+                )
+            }
+            Spacer(Modifier.height(28.dp))
+            Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                IntroButton("Понятно", primary = true) { close() }
+                IntroButton("Узнать больше", primary = false) {
+                    close()
+                    HalloweenNavigation.openEventSection(null)
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.navigationBarsPadding())
+        }
+    }
+}
+
+@Composable
+private fun IntroButton(text: String, primary: Boolean, onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    Button(
+        onClick,
+        Modifier.fillMaxWidth().height(52.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (primary) colors.onSurface else colors.surfaceVariant,
+            contentColor = if (primary) colors.surface else colors.onSurface,
+        ),
+    ) {
+        Text(text, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+    }
 }

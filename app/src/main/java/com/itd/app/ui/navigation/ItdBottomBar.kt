@@ -34,6 +34,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -61,8 +63,11 @@ fun ItdBottomBar(
 ) {
     val colors = MaterialTheme.colorScheme
     val dark = isSystemInDarkTheme()
-    val border = (if (dark) Color.White else Color.Black).copy(alpha = 0.12f)
-    val pill = if (dark) lerp(colors.surface, Color.White, 0.08f) else lerp(colors.surface, Color.Black, 0.08f)
+    val pill = (if (dark) Color.White else Color.Black).copy(alpha = 0.12f)
+    val track = colors.background.let { bg ->
+        val delta = if (dark) 0.08f else -0.08f
+        Color((bg.red + delta).coerceIn(0f, 1f), (bg.green + delta).coerceIn(0f, 1f), (bg.blue + delta).coerceIn(0f, 1f), bg.alpha)
+    }
     val items: List<String> = buildList {
         tabs.forEachIndexed { index, tab ->
             if (index == 2 && portalTitle != null) add("portal")
@@ -71,10 +76,9 @@ fun ItdBottomBar(
     }
     Box(modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp)) {
         BoxWithConstraints(
-            Modifier.fillMaxWidth().height(60.dp)
-                .background(colors.surface.copy(alpha = 0.92f), RoundedCornerShape(50))
-                .border(1.dp, border, RoundedCornerShape(50))
-                .padding(4.dp),
+            Modifier.fillMaxWidth().height(64.dp)
+                .background(track.copy(alpha = 0.92f), RoundedCornerShape(50))
+                .padding(5.dp),
         ) {
             val itemWidth = maxWidth / items.size
             val selectedIndex = items.indexOf(current).coerceAtLeast(0)
@@ -115,24 +119,26 @@ fun ItdBottomBar(
                             }
                         }
                         Text(
-                            tab?.label ?: portalTitle.orEmpty(),
+                            tab?.label ?: "Ивент",
                             color = tint,
-                            fontSize = 10.sp,
-                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
                         )
                     }
                 }
             }
         }
-        if (current == "feed") {
+        run {
             Box(
-                Modifier.align(Alignment.TopEnd).offset(x = (-4).dp, y = (-64).dp).size(50.dp)
-                    .background(colors.primary.copy(alpha = 0.92f), CircleShape)
+                Modifier.align(Alignment.TopEnd).offset(x = (-4).dp, y = -(14.dp + 50.dp)).size(50.dp)
+                    .background(track.copy(alpha = 0.92f), CircleShape)
                     .clickable(onClick = onCreatePost),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(painterResource(R.drawable.ic_add_post), "Создать пост", Modifier.size(18.dp), tint = colors.onPrimary)
+                Icon(painterResource(R.drawable.ic_add_post), "Создать пост", Modifier.size(18.dp), tint = colors.onSurface)
             }
         }
     }
