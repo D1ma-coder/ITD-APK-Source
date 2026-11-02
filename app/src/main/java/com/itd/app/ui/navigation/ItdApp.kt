@@ -11,9 +11,11 @@ import androidx.navigation.compose.*
 import com.itd.app.di.AppContainer
 import com.itd.app.di.viewModelFactory
 import com.itd.app.ui.common.*
-import com.itd.app.ui.screens.auth.*
+import com.itd.app.ui.screens.forgot.*
+import com.itd.app.ui.screens.otp.*
 import com.itd.app.ui.screens.login.*
 import com.itd.app.ui.screens.profilesetup.*
+import com.itd.app.ui.screens.register.*
 
 @Composable
 fun ItdApp(container: AppContainer, componentContext: com.arkivanov.decompose.ComponentContext, pendingLink: String? = null, onLinkConsumed: () -> Unit = {}) {
@@ -37,18 +39,29 @@ fun ItdApp(container: AppContainer, componentContext: com.arkivanov.decompose.Co
             auth!!.banned || auth!!.deleted -> AccountStatusScreen(container, auth!!.canRestore, auth!!.restoreDeadline, { root.logout() })
             else -> {
                 val nav = rememberNavController()
+                var signUp by remember { mutableStateOf<SignUpResult?>(null) }
                 NavHost(nav, startDestination = "login") {
                     composable("login") {
                         val login: LoginViewModel = viewModel(factory = viewModelFactory { LoginViewModel(container.authRepository) })
                         LoginScreen(login, { nav.popBackStack("login", false) }, { nav.navigate("forgot") }, { nav.navigate("register") })
                     }
                     composable("register") {
-                        val register: AuthFlowViewModel = viewModel(factory = viewModelFactory { AuthFlowViewModel(AuthFlow.Register, container.authRepository) })
-                        AuthFlowScreen(register, { nav.popBackStack() }, { nav.popBackStack("login", false) })
+                        val register: RegisterViewModel = viewModel(factory = viewModelFactory { RegisterViewModel(container.authRepository) })
+                        RegisterScreen(register, { email, password, flowToken ->
+                            signUp = SignUpResult(email, password, flowToken)
+                            nav.navigate("verify")
+                        }, { nav.popBackStack() })
+                    }
+                    composable("verify") {
+                        val pending = signUp ?: return@composable
+                        val verify: OtpViewModel = viewModel(factory = viewModelFactory {
+                            OtpViewModel(container.authRepository, pending.email, pending.password, pending.flowToken)
+                        })
+                        VerifyEmailScreen(verify, { nav.popBackStack("login", false) }, { nav.popBackStack() })
                     }
                     composable("forgot") {
-                        val forgot: AuthFlowViewModel = viewModel(factory = viewModelFactory { AuthFlowViewModel(AuthFlow.ForgotPassword, container.authRepository) })
-                        AuthFlowScreen(forgot, { nav.popBackStack() }, { nav.popBackStack("login", false) })
+                        val forgot: ForgotPasswordViewModel = viewModel(factory = viewModelFactory { ForgotPasswordViewModel(container.authRepository) })
+                        ForgotPasswordScreen(forgot, { nav.popBackStack("login", false) }, { nav.popBackStack() })
                     }
                 }
             }

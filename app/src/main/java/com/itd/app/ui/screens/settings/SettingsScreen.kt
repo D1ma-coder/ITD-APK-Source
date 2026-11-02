@@ -212,7 +212,7 @@ fun ChangePasswordScreen(container: AppContainer, onBack: () -> Unit) {
     val scope = rememberCoroutineScope()
     val canSave = oldPassword.isNotBlank() && newPassword.isNotBlank() && confirmation.isNotBlank() && !loading
     SettingsPage("Сменить пароль", onBack, action = "Сохранить", actionEnabled = canSave, onAction = {
-        error = com.itd.app.ui.screens.auth.passwordError(newPassword) ?: if (newPassword != confirmation) "Пароли не совпадают" else null
+        error = passwordError(newPassword) ?: if (newPassword != confirmation) "Пароли не совпадают" else null
         if (error == null) {
             scope.launch {
                 loading = true
@@ -291,4 +291,12 @@ fun DeleteAccountScreen(container: AppContainer, onBack: () -> Unit, onDeleted: 
             dismissButton = { TextButton(onClick = { confirm = false }) { Text("Отмена") } },
         )
     }
+}
+
+private fun passwordError(password: String): String? = when {
+    password.isBlank() -> "Введите пароль"
+    password.length !in 8..100 -> "Пароль должен быть от 8 до 100 символов"
+    password.none(Char::isLetter) -> "Пароль должен содержать хотя бы одну букву"
+    password.none(Char::isDigit) -> "Пароль должен содержать хотя бы одну цифру"
+    else -> null
 }
