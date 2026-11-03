@@ -1,8 +1,6 @@
 package com.itd.app.ui.screens.createpost
 
 import android.net.Uri
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.itd.app.data.model.CreatePostRequest
@@ -16,40 +14,45 @@ import com.itd.app.data.repository.MediaRepository
 import com.itd.app.data.repository.PostUpdates
 import com.itd.app.halloween.HalloweenRepository
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
+import java.util.UUID
 
-data class DraftAttachment(val uri: Uri, val id: String? = null, val url: String? = null, val progress: Float = 0f, val failed: Boolean = false) {
-    val uploading: Boolean get() = id == null && !failed
+/** Upload of one attachment, which starts as soon as it is picked. */
+sealed interface UploadState {
+    data object Pending : UploadState
+    data object Processing : UploadState
+    data class Uploading(val progress: Float) : UploadState
+    data class Success(val serverId: String, val url: String) : UploadState
+    data class Error(val message: String) : UploadState
 }
 
-data class PollDraft(val question: String = "", val options: List<String> = listOf("", ""), val multipleChoice: Boolean = false) {
-    fun toRequest(): PostPollRequest? {
-        val filled = options.map { it.trim() }.filter { it.isNotEmpty() }
-        if (question.isBlank() || filled.size < 2) return null
-        return PostPollRequest(question.trim(), filled.map(::PostPollOptionRequest), multipleChoice)
-    }
-}
+data class PendingMedia(val localId: String, val uri: Uri, val state: UploadState = UploadState.Pending)
 
 data class CreatePostState(
-    val text: TextFieldValue = TextFieldValue(""),
-    val spans: List<PostSpan> = emptyList(),
-    val attachments: List<DraftAttachment> = emptyList(),
-    val poll: PollDraft? = null,
+    val photos: List<PendingMedia> = emptyList(),
+    val video: PendingMedia? = null,
+    val pollEnabled: Boolean = false,
+    val pollQuestion: String = "",
+    val pollMultipleChoice: Boolean = false,
     val nightEnabled: Boolean = false,
     val nightText: String = "",
-    val nightImages: List<DraftAttachment> = emptyList(),
+    val nightImages: List<PendingMedia> = emptyList(),
     val isSending: Boolean = false,
+    /** Shown as the "Ошибка" dialog. */
     val error: String? = null,
+    /** Shown as the hint above the publish button. */
+    val hint: String? = null,
     val createdPostId: String? = null,
     val resultMessage: String? = null,
 ) {
-    val content: String get() = text.text
-    val uploading: Boolean get() = attachments.any { it.uploading } || nightImages.any { it.uploading }
-    val canPublish: Boolean
-        get() = !isSending && !uploading && (content.isNotBlank() || attachments.any { it.id != null } || poll?.toRequest() != null)
+    /** A video is being prepared or uploaded: publishing waits for it. */
+    val videoBusy: Boolean
+        get() = video?.state.let { it is UploadState.Pending || it is UploadState.Uploading || it is UploadState.Processing }
 }
 
 class CreatePostViewModel(
@@ -61,128 +64,144 @@ class CreatePostViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(CreatePostState())
     val state = _state.asStateFlow()
+    private val uploads = HashMap<String, Job>()
 
-    fun onTextChange(value: TextFieldValue) {
-        val old = _state.value.text.text
-        val new = value.text
-        if (old == new) {
-            _state.update { it.copy(text = value) }
+    /** Picked photos and videos: one video replaces nothing and excludes photos, photos are capped at 10. */
+    fun attach(uris: List<Uri>, isVideo: (Uri) -> Boolean, night: Boolean = false) {
+        if (uris.isEmpty()) return
+        if (night) {
+            uris.filterNot(isVideo).take(4 - _state.value.nightImages.size).forEach { uri ->
+                val item = PendingMedia(UUID.randomUUID().toString(), uri)
+                _state.update { it.copy(nightImages = it.nightImages + item) }
+                upload(item, night = true)
+            }
             return
         }
-        val prefix = old.commonPrefixWith(new).length
-        val suffix = old.substring(prefix).commonSuffixWith(new.substring(prefix)).length
-        val removedEnd = old.length - suffix
-        val delta = new.length - old.length
-        val spans = _state.value.spans.mapNotNull { span ->
-            val start = span.offset
-            val end = span.offset + span.length
-            when {
-                end <= prefix -> span
-                start >= removedEnd -> span.copy(offset = start + delta)
-                else -> {
-                    val newStart = minOf(start, prefix)
-                    val newEnd = if (end >= removedEnd) end + delta else prefix
-                    if (newEnd > newStart) span.copy(offset = newStart, length = newEnd - newStart) else null
+        val video = uris.firstOrNull(isVideo)
+        if (video != null && _state.value.video == null) {
+            val item = PendingMedia(UUID.randomUUID().toString(), video)
+            _state.update { it.copy(video = item) }
+            upload(item, video = true)
+            return
+        }
+        val known = _state.value.photos.map { it.uri }.toSet()
+        uris.filter { it !in known && !isVideo(it) }.take(10 - _state.value.photos.size).forEach { uri ->
+            val item = PendingMedia(UUID.randomUUID().toString(), uri)
+            _state.update { it.copy(photos = it.photos + item) }
+            upload(item)
+        }
+    }
+
+    /** A drawing from the "Рисунок" editor: saved as PNG and uploaded as it is. */
+    fun attachDrawing(file: File, png: ByteArray, night: Boolean) {
+        val item = PendingMedia(UUID.randomUUID().toString(), Uri.fromFile(file))
+        if (night) {
+            if (_state.value.nightImages.size >= 4) return
+            _state.update { it.copy(nightImages = it.nightImages + item) }
+        } else {
+            if (_state.value.photos.size >= 10) return
+            _state.update { it.copy(photos = it.photos + item) }
+        }
+        drawings[item.localId] = png
+        upload(item, night = night)
+    }
+
+    private val drawings = HashMap<String, ByteArray>()
+
+    private fun upload(item: PendingMedia, video: Boolean = false, night: Boolean = false) {
+        uploads[item.localId]?.cancel()
+        uploads[item.localId] = viewModelScope.launch {
+            try {
+                setState(item.localId, if (video) UploadState.Processing else UploadState.Uploading(0f))
+                val progress = { sent: Long, total: Long? ->
+                    if (total != null && total > 0) setState(item.localId, UploadState.Uploading((sent.toFloat() / total).coerceIn(0f, 1f)))
                 }
-            }
-        }
-        _state.update { it.copy(text = value, spans = spans, error = null) }
-    }
-
-    /** Applies [type] to the selection; "plain" removes all formatting from it. */
-    fun format(type: String, url: String? = null) {
-        val selection = _state.value.text.selection
-        if (selection.collapsed) return
-        val start = selection.min
-        val end = selection.max
-        val kept = _state.value.spans.flatMap { span ->
-            val spanEnd = span.offset + span.length
-            if (spanEnd <= start || span.offset >= end || (type != "plain" && span.type != type)) {
-                listOf(span)
-            } else {
-                listOfNotNull(
-                    if (span.offset < start) span.copy(length = start - span.offset) else null,
-                    if (spanEnd > end) span.copy(offset = end, length = spanEnd - end) else null,
-                )
-            }
-        }
-        val added = if (type == "plain") emptyList() else listOf(PostSpan(type, end - start, start, url = url))
-        _state.update { it.copy(spans = (kept + added).sortedBy { span -> span.offset }, text = it.text.copy(selection = TextRange(end))) }
-    }
-
-    fun attach(uris: List<Uri>, night: Boolean = false) {
-        uris.forEach { uri ->
-            val draft = DraftAttachment(uri)
-            _state.update { if (night) it.copy(nightImages = it.nightImages + draft) else it.copy(attachments = it.attachments + draft) }
-            viewModelScope.launch {
-                try {
-                    val file = mediaRepository.upload(uri, UploadContext.POST) { sent, total ->
-                        if (total != null && total > 0) updateAttachment(uri, night) { it.copy(progress = (sent.toFloat() / total).coerceIn(0f, 1f)) }
-                    }
-                    updateAttachment(uri, night) { it.copy(id = file.id, url = file.url, progress = 1f) }
-                } catch (e: CancellationException) {
-                    throw e
-                } catch (e: Exception) {
-                    updateAttachment(uri, night) { it.copy(failed = true) }
-                    _state.update { it.copy(error = e.message ?: "Ошибка") }
+                val drawing = drawings[item.localId]
+                val file = if (drawing != null) {
+                    mediaRepository.upload("drawing_${item.localId}.png", drawing, "image/png", UploadContext.POST, progress)
+                } else {
+                    mediaRepository.upload(item.uri, UploadContext.POST, onProgress = progress)
                 }
+                setState(item.localId, UploadState.Success(file.id, file.url))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                setState(item.localId, UploadState.Error(e.message ?: "Не удалось загрузить"))
+            } finally {
+                uploads.remove(item.localId)
             }
         }
     }
 
-    private fun updateAttachment(uri: Uri, night: Boolean, transform: (DraftAttachment) -> DraftAttachment) {
-        _state.update { state ->
-            if (night) {
-                state.copy(nightImages = state.nightImages.map { if (it.uri == uri) transform(it) else it })
-            } else {
-                state.copy(attachments = state.attachments.map { if (it.uri == uri) transform(it) else it })
-            }
+    private fun setState(localId: String, state: UploadState) = _state.update { current ->
+        current.copy(
+            photos = current.photos.map { if (it.localId == localId) it.copy(state = state) else it },
+            video = current.video?.let { if (it.localId == localId) it.copy(state = state) else it },
+            nightImages = current.nightImages.map { if (it.localId == localId) it.copy(state = state) else it },
+        )
+    }
+
+    fun retry(item: PendingMedia) = upload(item, video = _state.value.video?.localId == item.localId, night = _state.value.nightImages.any { it.localId == item.localId })
+
+    fun remove(item: PendingMedia) {
+        uploads.remove(item.localId)?.cancel()
+        _state.update { current ->
+            current.copy(
+                photos = current.photos.filterNot { it.localId == item.localId },
+                video = current.video?.takeIf { it.localId != item.localId },
+                nightImages = current.nightImages.filterNot { it.localId == item.localId },
+            )
         }
     }
 
-    fun removeAttachment(uri: Uri, night: Boolean = false) = _state.update {
-        if (night) it.copy(nightImages = it.nightImages.filterNot { a -> a.uri == uri }) else it.copy(attachments = it.attachments.filterNot { a -> a.uri == uri })
-    }
+    fun setPollEnabled(enabled: Boolean) = _state.update { it.copy(pollEnabled = enabled) }
 
-    fun setPoll(poll: PollDraft?) = _state.update { it.copy(poll = poll) }
+    fun onPollQuestionChange(value: String) = _state.update { it.copy(pollQuestion = value) }
+
+    fun setPollMultipleChoice(value: Boolean) = _state.update { it.copy(pollMultipleChoice = value) }
 
     fun setNightEnabled(enabled: Boolean) = _state.update { it.copy(nightEnabled = enabled) }
 
-    fun onNightTextChange(value: String) = _state.update { it.copy(nightText = value, error = null) }
+    fun onNightTextChange(value: String) = _state.update { it.copy(nightText = value, hint = null) }
+
+    fun showHint(message: String) = _state.update { it.copy(hint = message) }
+
+    fun dismissHint() = _state.update { it.copy(hint = null) }
+
+    fun dismissError() = _state.update { it.copy(error = null) }
 
     fun consumeResult() = _state.update { it.copy(resultMessage = null) }
 
-    fun submit() {
+    /** Why publishing is not possible right now, or null; the publish button shows it instead of posting. */
+    fun validation(text: String): String? {
         val state = _state.value
-        if (!state.canPublish) return
-        if (state.nightEnabled) {
-            val problem = when {
-                state.content.isBlank() -> "Сначала напиши дневную версию: ночная появится поверх неё"
-                state.nightImages.any { it.uploading } -> "Подожди, ночные картинки ещё загружаются"
-                state.nightText.isBlank() -> "Добавь текст ночной версии"
-                else -> null
-            }
-            if (problem != null) {
-                _state.update { it.copy(error = problem) }
-                return
-            }
+        if (!state.nightEnabled) return null
+        return when {
+            text.isBlank() -> "Сначала напиши дневную версию: ночная появится поверх неё"
+            state.nightImages.any { it.state !is UploadState.Success && it.state !is UploadState.Error } -> "Подожди, ночные картинки ещё загружаются"
+            state.nightText.isBlank() -> "Добавь текст ночной версии"
+            else -> null
         }
+    }
+
+    fun submit(text: String, spans: List<PostSpan>, pollOptions: List<String>) {
+        val state = _state.value
+        if (state.isSending) return
         _state.update { it.copy(isSending = true, error = null) }
         viewModelScope.launch {
             try {
-                val post = api.create(
-                    CreatePostRequest(
-                        state.content,
-                        state.attachments.mapNotNull { it.id },
-                        spans = state.spans,
-                        poll = state.poll?.toRequest(),
-                        wallRecipientId = wallRecipientId,
-                    ),
-                )
+                var attachments = state.photos.mapNotNull { (it.state as? UploadState.Success)?.serverId }
+                (state.video?.state as? UploadState.Success)?.serverId?.let { attachments = listOf(it) }
+                val poll = if (state.pollEnabled) {
+                    PostPollRequest(state.pollQuestion, pollOptions.filter { it.isNotBlank() }.map(::PostPollOptionRequest), state.pollMultipleChoice)
+                } else {
+                    null
+                }
+                val post = api.create(CreatePostRequest(text, attachments, spans = spans, poll = poll, wallRecipientId = wallRecipientId))
                 var message: String? = null
                 if (state.nightEnabled && halloween != null) {
                     message = try {
-                        halloween.createWerewolf(post.id, state.nightText.trim(), ArrayList(state.nightImages.mapNotNull { it.url }))
+                        halloween.createWerewolf(post.id, state.nightText.trim(), ArrayList(state.nightImages.mapNotNull { (it.state as? UploadState.Success)?.url }))
                         "Пост стал оборотнем"
                     } catch (e: CancellationException) {
                         throw e
@@ -195,10 +214,14 @@ class CreatePostViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: ApiException) {
-                if (e.code == "PHONE_VERIFICATION_REQUIRED") onPhoneVerification()
-                _state.update { it.copy(isSending = false, error = e.message) }
+                if (e.code == "PHONE_VERIFICATION_REQUIRED") {
+                    onPhoneVerification()
+                    _state.update { it.copy(isSending = false) }
+                } else {
+                    _state.update { it.copy(isSending = false, error = e.message) }
+                }
             } catch (e: Exception) {
-                _state.update { it.copy(isSending = false, error = e.message ?: "Ошибка") }
+                _state.update { it.copy(isSending = false) }
             }
         }
     }

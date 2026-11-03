@@ -18,6 +18,9 @@ androidx-camera-view = { module = "androidx.camera:camera-view", version = "1.4.
 androidx-camera-video = { module = "androidx.camera:camera-video", version = "1.4.1" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version = "1.6.0" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version = "1.6.0" }
+androidx-media3-transformer = { module = "androidx.media3:media3-transformer", version = "1.6.0" }
+androidx-media3-effect = { module = "androidx.media3:media3-effect", version = "1.6.0" }
+androidx-exifinterface = { module = "androidx.exifinterface:exifinterface", version = "1.4.1" }
 mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version = "17.3.0" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.8.5" }

@@ -403,11 +403,12 @@ private fun DrawScope.drawStroke(tool: BannerTool, color: Color, width: Float, p
     }
 }
 
-private fun saveToGallery(context: Context, strokes: List<BannerStroke>, width: Float, height: Float) {
-    val bitmap = Bitmap.createBitmap(width.toInt() * 2, height.toInt() * 2, Bitmap.Config.ARGB_8888)
+/** The drawing on white, [scale] times the canvas size. */
+fun renderDrawing(strokes: List<BannerStroke>, width: Float, height: Float, scale: Float = 2f): Bitmap {
+    val bitmap = Bitmap.createBitmap((width * scale).toInt(), (height * scale).toInt(), Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)
     canvas.drawColor(android.graphics.Color.WHITE)
-    canvas.scale(2f, 2f)
+    canvas.scale(scale, scale)
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeCap = Paint.Cap.ROUND
@@ -436,6 +437,11 @@ private fun saveToGallery(context: Context, strokes: List<BannerStroke>, width: 
             BannerTool.CIRCLE -> canvas.drawCircle(p[0], p[1], hypot(p[2] - p[0], p[3] - p[1]), paint)
         }
     }
+    return bitmap
+}
+
+private fun saveToGallery(context: Context, strokes: List<BannerStroke>, width: Float, height: Float) {
+    val bitmap = renderDrawing(strokes, width, height)
     val values = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, "itd-drawing-${System.currentTimeMillis()}.png")
         put(MediaStore.Images.Media.MIME_TYPE, "image/png")
