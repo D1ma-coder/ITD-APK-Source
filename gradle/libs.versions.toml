@@ -16,6 +16,8 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version =
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version = "1.4.1" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version = "1.4.1" }
 androidx-camera-video = { module = "androidx.camera:camera-video", version = "1.4.1" }
+androidx-camera-mlkit-vision = { module = "androidx.camera:camera-mlkit-vision", version = "1.4.1" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version = "1.6.0" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version = "1.6.0" }
 androidx-media3-transformer = { module = "androidx.media3:media3-transformer", version = "1.6.0" }

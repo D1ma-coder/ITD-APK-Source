@@ -1,69 +1,70 @@
 package com.itd.app.ui.screens.qr
 
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.mlkit.vision.MlKitAnalyzer
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 
-@androidx.annotation.OptIn(ExperimentalGetImage::class)
+/**
+ * Full-screen back camera that reports the QR code it sees and where it is on screen
+ * (null when it lost it). Frames are ignored while [paused].
+ */
 @Composable
-fun QrScanner(onCode: (String) -> Unit, modifier: Modifier = Modifier) {
+fun QrScanner(onCode: (String) -> Unit, onRect: (Rect?) -> Unit, paused: Boolean, modifier: Modifier = Modifier.fillMaxSize()) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    val callback by rememberUpdatedState(onCode)
-    var granted by remember { mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) }
-    var error by remember { mutableStateOf<String?>(null) }
-    val request = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted = it }
-    LaunchedEffect(Unit) { if (!granted) request.launch(Manifest.permission.CAMERA) }
-    if (!granted) {
-        Column(modifier, horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally, verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center) {
-            Text("Нужен доступ к камере", fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
-            Text("Без камеры код не отсканировать.")
-            Button(onClick = { request.launch(Manifest.permission.CAMERA) }) { Text("Разрешить") }
-        }
-        return
-    }
     val previewView = remember { PreviewView(context) }
-    DisposableEffect(owner, previewView) {
-        var disposed = false
-        var provider: ProcessCameraProvider? = null
+    val code by rememberUpdatedState(onCode)
+    val rect by rememberUpdatedState(onRect)
+    val frozen by rememberUpdatedState(paused)
+    DisposableEffect(context, previewView, owner) {
         val executor = Executors.newSingleThreadExecutor()
-        val scanner = BarcodeScanning.getClient(BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build())
-        val preview = Preview.Builder().build().apply { surfaceProvider = previewView.surfaceProvider }
-        val analysis = ImageAnalysis.Builder().setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
-        analysis.setAnalyzer(executor) { proxy ->
-            val image = proxy.image
-            if (image == null || disposed) proxy.close()
-            else scanner.process(InputImage.fromMediaImage(image, proxy.imageInfo.rotationDegrees))
-                .addOnSuccessListener { codes -> codes.firstOrNull()?.rawValue?.let { if (!disposed) callback(it) } }
-                .addOnCompleteListener { proxy.close() }
+        val scanner = BarcodeScanning.getClient()
+        val controller = LifecycleCameraController(context)
+        controller.cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+        controller.setEnabledUseCases(CameraController.IMAGE_ANALYSIS)
+        controller.setImageAnalysisAnalyzer(
+            executor,
+            MlKitAnalyzer(listOf(scanner), ImageAnalysis.COORDINATE_SYSTEM_VIEW_REFERENCED, ContextCompat.getMainExecutor(context)) { result ->
+                if (frozen) return@MlKitAnalyzer
+                val qr = result.getValue(scanner)?.firstOrNull { it.format == Barcode.FORMAT_QR_CODE }
+                if (qr == null) {
+                    rect(null)
+                    return@MlKitAnalyzer
+                }
+                qr.boundingBox?.let { box ->
+                    rect(Rect(Offset(box.left.toFloat(), box.top.toFloat()), Size(box.width().toFloat(), box.height().toFloat())))
+                }
+                qr.rawValue?.let(code)
+            },
+        )
+        previewView.controller = controller
+        controller.bindToLifecycle(owner)
+        onDispose {
+            controller.unbind()
+            previewView.controller = null
+            scanner.close()
+            executor.shutdown()
         }
-        val future = ProcessCameraProvider.getInstance(context)
-        future.addListener({ if (!disposed) try {
-            provider = future.get()
-            provider!!.bindToLifecycle(owner, CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis)
-        } catch (failure: Exception) { error = failure.message } }, ContextCompat.getMainExecutor(context))
-        onDispose { disposed = true; analysis.clearAnalyzer(); provider?.unbind(preview, analysis); scanner.close(); executor.shutdown() }
     }
-    Column(modifier) { error?.let { Text(it) }; AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize()) }
+    AndroidView({ previewView }, modifier)
 }
